@@ -4,6 +4,8 @@ FastAPI-based AI service for predictive maintenance with 8 machine learning mode
 
 ## Status: Ready for Production Deployment
 
+### Latest Update: GitHub Actions CI/CD Configured
+
 ## Features
 
 - **Anomaly Detection**: Isolation Forest, One-Class SVM, DBSCAN, Autoencoder
