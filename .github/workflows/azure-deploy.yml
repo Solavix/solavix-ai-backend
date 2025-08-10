@@ -40,15 +40,15 @@ jobs:
         "
     
     - name: 🚀 Deploy to Azure App Service
-      uses: azure/webapps-deploy@v3
+      uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
         package: '.'
-        startup-command: 'gunicorn main:app -c gunicorn.conf.py'
     
     - name: 🔍 Post-deployment health check
       run: |
         echo "Waiting for deployment to complete..."
-        sleep 30
+        sleep 60
+        curl -f https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/ || echo "App may still be starting..."
         curl -f https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/api/ai/health || echo "Health check failed - app may still be starting"
