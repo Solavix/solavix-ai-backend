@@ -4,7 +4,7 @@ FastAPI-based AI service for predictive maintenance with 8 machine learning mode
 
 ## Status: Ready for Production Deployment
 
-### Latest Update: GitHub Actions CI/CD Configured
+### Latest Update: GitHub Actions CI/CD Configured - Force Fresh Deploy
 
 ## Features
 
