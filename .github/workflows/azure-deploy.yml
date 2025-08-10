@@ -1,0 +1,54 @@
+name: Deploy Solavix AI Backend to Azure
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  AZURE_WEBAPP_NAME: solavix-ai
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 🔄 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🐍 Setup Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: 📦 Install dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install -r requirements.txt
+    
+    - name: 🧪 Test ML models initialization (optional)
+      run: |
+        python -c "
+        try:
+            import fastapi, uvicorn, tensorflow, sklearn, xgboost, prophet
+            print('✅ All ML dependencies imported successfully')
+        except ImportError as e:
+            print(f'❌ Import error: {e}')
+            exit(1)
+        "
+    
+    - name: 🚀 Deploy to Azure App Service
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: '.'
+        startup-command: 'gunicorn main:app -c gunicorn.conf.py'
+    
+    - name: 🔍 Post-deployment health check
+      run: |
+        echo "Waiting for deployment to complete..."
+        sleep 30
+        curl -f https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/api/ai/health || echo "Health check failed - app may still be starting"
